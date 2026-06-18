@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>健康資料輸入</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="entry">
+    <header class="app-header">
+        <h1>智慧健康日誌與風險評估系統</h1>
+        <nav class="app-nav">
+            <a href="../index.html" data-page="dashboard">儀表板</a>
+            <a href="entry.html" data-page="entry">健康資料輸入</a>
+            <a href="history.html" data-page="history">歷史紀錄</a>
+            <a href="trends.html" data-page="trends">趨勢分析</a>
+            <a href="model.html" data-page="model">決策樹分析</a>
+            <a href="settings.html" data-page="settings">設定/資料管理</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>健康資料輸入</h2>
+            <form class="entry-form" id="entryForm">
+                <div>
+                    <label for="logDate">日期</label>
+                    <input type="date" id="logDate" name="logDate" required>
+                </div>
+                <div>
+                    <label for="sleepHours">睡眠時數</label>
+                    <input type="number" id="sleepHours" name="sleepHours" step="0.1" min="0" max="24" required>
+                </div>
+                <div>
+                    <label for="steps">當日步數</label>
+                    <input type="number" id="steps" name="steps" step="1" min="0" required>
+                </div>
+                <div>
+                    <label for="moodScore">心情分數（1~10）</label>
+                    <input type="number" id="moodScore" name="moodScore" step="1" min="1" max="10" required>
+                </div>
+                <button type="submit">送出並評估風險</button>
+            </form>
+        </div>
+
+        <div class="card" id="resultCard" style="display:none;">
+            <h2>評估結果</h2>
+            <p id="resultRisk"></p>
+            <p id="resultInsight" class="muted"></p>
+        </div>
+    </main>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/entry.js"></script>
+</body>
+</html>

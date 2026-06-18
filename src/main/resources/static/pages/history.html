@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>歷史紀錄查詢</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="history">
+    <header class="app-header">
+        <h1>智慧健康日誌與風險評估系統</h1>
+        <nav class="app-nav">
+            <a href="../index.html" data-page="dashboard">儀表板</a>
+            <a href="entry.html" data-page="entry">健康資料輸入</a>
+            <a href="history.html" data-page="history">歷史紀錄</a>
+            <a href="trends.html" data-page="trends">趨勢分析</a>
+            <a href="model.html" data-page="model">決策樹分析</a>
+            <a href="settings.html" data-page="settings">設定/資料管理</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>歷史紀錄查詢</h2>
+            <div class="toolbar">
+                <label style="margin:0;">起始日期</label>
+                <input type="date" id="filterFrom" style="width:auto;">
+                <label style="margin:0;">結束日期</label>
+                <input type="date" id="filterTo" style="width:auto;">
+                <button id="applyFilter">查詢</button>
+                <button class="secondary" id="clearFilter">清除</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th id="sortByDate">日期 <span id="sortArrow">↓</span></th>
+                        <th>睡眠時數</th>
+                        <th>步數</th>
+                        <th>心情分數</th>
+                        <th>風險等級</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr><td colspan="5" class="muted">載入中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/history.js"></script>
+</body>
+</html>

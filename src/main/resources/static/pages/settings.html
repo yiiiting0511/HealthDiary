@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>設定 / 資料管理</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="settings">
+    <header class="app-header">
+        <h1>智慧健康日誌與風險評估系統</h1>
+        <nav class="app-nav">
+            <a href="../index.html" data-page="dashboard">儀表板</a>
+            <a href="entry.html" data-page="entry">健康資料輸入</a>
+            <a href="history.html" data-page="history">歷史紀錄</a>
+            <a href="trends.html" data-page="trends">趨勢分析</a>
+            <a href="model.html" data-page="model">決策樹分析</a>
+            <a href="settings.html" data-page="settings">設定/資料管理</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="card" id="editCard" style="display:none;">
+            <h2>編輯紀錄</h2>
+            <form class="entry-form" id="editForm">
+                <input type="hidden" id="editId">
+                <div>
+                    <label>日期</label>
+                    <input type="date" id="editLogDate" required>
+                </div>
+                <div>
+                    <label>睡眠時數</label>
+                    <input type="number" id="editSleepHours" step="0.1" min="0" max="24" required>
+                </div>
+                <div>
+                    <label>步數</label>
+                    <input type="number" id="editSteps" step="1" min="0" required>
+                </div>
+                <div>
+                    <label>心情分數</label>
+                    <input type="number" id="editMoodScore" step="1" min="1" max="10" required>
+                </div>
+                <div class="toolbar">
+                    <button type="submit">儲存</button>
+                    <button type="button" class="secondary" id="cancelEdit">取消</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>歷史紀錄管理</h2>
+            <table>
+                <thead>
+                    <tr><th>日期</th><th>睡眠時數</th><th>步數</th><th>心情分數</th><th>風險等級</th><th>操作</th></tr>
+                </thead>
+                <tbody id="logsBody"><tr><td colspan="6" class="muted">載入中...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>種子訓練資料管理（決策樹 Training Data）</h2>
+            <form class="entry-form" id="seedForm">
+                <div>
+                    <label>日期</label>
+                    <input type="date" id="seedLogDate" required>
+                </div>
+                <div>
+                    <label>睡眠時數</label>
+                    <input type="number" id="seedSleepHours" step="0.1" min="0" max="24" required>
+                </div>
+                <div>
+                    <label>步數</label>
+                    <input type="number" id="seedSteps" step="1" min="0" required>
+                </div>
+                <div>
+                    <label>心情分數</label>
+                    <input type="number" id="seedMoodScore" step="1" min="1" max="10" required>
+                </div>
+                <div>
+                    <label>風險等級（手動標記）</label>
+                    <select id="seedRiskLevel" required>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <button type="submit">新增種子資料並重新訓練</button>
+            </form>
+
+            <table style="margin-top:16px;">
+                <thead>
+                    <tr><th>日期</th><th>睡眠時數</th><th>步數</th><th>心情分數</th><th>風險等級</th><th>操作</th></tr>
+                </thead>
+                <tbody id="seedBody"><tr><td colspan="6" class="muted">載入中...</td></tr></tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/settings.js"></script>
+</body>
+</html>

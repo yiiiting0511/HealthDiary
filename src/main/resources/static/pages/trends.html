@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>健康趨勢分析</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="trends">
+    <header class="app-header">
+        <h1>智慧健康日誌與風險評估系統</h1>
+        <nav class="app-nav">
+            <a href="../index.html" data-page="dashboard">儀表板</a>
+            <a href="entry.html" data-page="entry">健康資料輸入</a>
+            <a href="history.html" data-page="history">歷史紀錄</a>
+            <a href="trends.html" data-page="trends">趨勢分析</a>
+            <a href="model.html" data-page="model">決策樹分析</a>
+            <a href="settings.html" data-page="settings">設定/資料管理</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>睡眠時數變化趨勢</h2>
+            <canvas id="sleepChart" height="90"></canvas>
+        </div>
+        <div class="card">
+            <h2>步數變化趨勢</h2>
+            <canvas id="stepsChart" height="90"></canvas>
+        </div>
+        <div class="card">
+            <h2>心情分數變化趨勢</h2>
+            <canvas id="moodChart" height="90"></canvas>
+        </div>
+    </main>
+
+    <script src="../vendor/chart.umd.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/trends.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>智慧健康日誌與風險評估系統 - 儀表板</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="dashboard">
+    <header class="app-header">
+        <h1>智慧健康日誌與風險評估系統</h1>
+        <nav class="app-nav">
+            <a href="index.html" data-page="dashboard">儀表板</a>
+            <a href="pages/entry.html" data-page="entry">健康資料輸入</a>
+            <a href="pages/history.html" data-page="history">歷史紀錄</a>
+            <a href="pages/trends.html" data-page="trends">趨勢分析</a>
+            <a href="pages/model.html" data-page="model">決策樹分析</a>
+            <a href="pages/settings.html" data-page="settings">設定/資料管理</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>最新風險等級</h2>
+            <div id="latestRisk">載入中...</div>
+        </div>
+
+        <div class="grid grid-3">
+            <div class="card stat">
+                <div class="value" id="statSleep">-</div>
+                <div class="label">最新睡眠時數</div>
+            </div>
+            <div class="card stat">
+                <div class="value" id="statSteps">-</div>
+                <div class="label">最新步數</div>
+            </div>
+            <div class="card stat">
+                <div class="value" id="statMood">-</div>
+                <div class="label">最新心情分數</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="toolbar">
+                <h2 style="margin:0;">最近紀錄</h2>
+                <a href="pages/entry.html"><button>+ 新增今日紀錄</button></a>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>日期</th><th>睡眠時數</th><th>步數</th><th>心情分數</th><th>風險等級</th></tr>
+                </thead>
+                <tbody id="recentLogsBody">
+                    <tr><td colspan="5" class="muted">載入中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>風險評估模型</h2>
+            <div id="modelSummary" class="muted">載入中...</div>
+            <p><a href="pages/model.html">查看完整決策樹分析 →</a></p>
+        </div>
+    </main>
+
+    <script src="js/common.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

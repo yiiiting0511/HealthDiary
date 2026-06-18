@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>決策樹分析</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="model">
+    <header class="app-header">
+        <h1>智慧健康日誌與風險評估系統</h1>
+        <nav class="app-nav">
+            <a href="../index.html" data-page="dashboard">儀表板</a>
+            <a href="entry.html" data-page="entry">健康資料輸入</a>
+            <a href="history.html" data-page="history">歷史紀錄</a>
+            <a href="trends.html" data-page="trends">趨勢分析</a>
+            <a href="model.html" data-page="model">決策樹分析</a>
+            <a href="settings.html" data-page="settings">設定/資料管理</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="card">
+            <div class="toolbar">
+                <h2 style="margin:0;">決策樹分析（資訊增益 / Information Gain）</h2>
+                <button id="retrainBtn">重新訓練模型</button>
+            </div>
+            <p class="muted" id="treeMeta">載入中...</p>
+        </div>
+
+        <div class="card">
+            <h2>1. 整體 Entropy</h2>
+            <p id="entropyValue" class="muted">載入中...</p>
+        </div>
+
+        <div class="card">
+            <h2>2. 各特徵的 Information Gain</h2>
+            <div id="gainBars"></div>
+            <p class="muted">資訊增益最大的特徵會作為決策樹的根節點。</p>
+        </div>
+
+        <div class="card">
+            <h2>3. 決策樹結構</h2>
+            <div class="tree-view" id="treeView">載入中...</div>
+        </div>
+    </main>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/model.js"></script>
+</body>
+</html>
