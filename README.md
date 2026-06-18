@@ -11,35 +11,49 @@
 - AI：Google Gemini API（`gemini-1.5-flash`，用於將風險等級轉換成一句健康建議）
 - 部署：Railway（內附 `Dockerfile` / `railway.json`）
 
-## 本機執行
+## 系統架構與資料流
 
-需要 JDK 21 與 Maven（本機需自行安裝；本沙箱環境僅有 JDK 11 且無 root 權限，
-無法在此直接執行 `mvn package` 驗證編譯，請在你的開發機器上跑一次完整編譯）。
+整體分四層：**前端（靜態頁面）→ 後端 API（Spring Boot Controller/Service）→ 資料庫（SQLite）**，
+決策樹 **ML 模組**則是內嵌在後端 Service 層裡的一個記憶體中模型，不是獨立服務，
+靠 `health_logs` 表的 `is_seed_data` 欄位跟資料庫串接，訓練資料與預測目標共用同一張表。
 
-```bash
-mvn spring-boot:run
+```
+┌──────────────────────┐        fetch（JSON）        ┌───────────────────────────────────────┐
+│        前端           │ ───────────────────────────▶ │              後端（Spring Boot）         │
+│ HTML + CSS + JS       │                              │                                         │
+│ entry/history/trends/ │ ◀─────────────────────────── │  Controller                            │
+│ model/settings.html   │        JSON 回應              │  ├─ HealthLogController  /api/logs     │
+└──────────────────────┘                              │  ├─ ModelController      /api/model    │
+                                                        │  └─ AiController          /api/ai       │
+                                                        │        │                                │
+                                                        │        ▼                                │
+                                                        │  Service                               │
+                                                        │  ├─ HealthLogService                    │
+                                                        │  │     │ 寫入/查詢紀錄、呼叫決策樹預測       │
+                                                        │  │     ▼                                │
+                                                        │  ├─ DecisionTreeService  ← ML 模組       │
+                                                        │  │     entropy / Information Gain        │
+                                                        │  │     在記憶體中保存目前訓練好的樹         │
+                                                        │  └─ AiInsightService                    │
+                                                        │        │ 依 risk_level 組 prompt          │
+                                                        └────────┼────────────────────────────────┘
+                                                                 │ JPA (Spring Data)
+                                                                 ▼
+                                                        ┌───────────────────┐        ┌──────────────────┐
+                                                        │  SQLite            │        │  Google Gemini API │
+                                                        │  health_logs 表    │        │ （risk_level→建議文字）│
+                                                        └───────────────────┘        └──────────────────┘
 ```
 
-預設使用 SQLite 檔案資料庫 `./data/health_diary.db`（會自動建立 `data/` 目錄）。
-首次啟動會自動寫入 24 筆種子訓練資料並訓練一次決策樹。
+**主要資料流：**
 
-開啟 http://localhost:8080 即可看到儀表板。
+1. **新增健康紀錄**：使用者在「健康資料輸入」填表 → `entry.js` 呼叫 `POST /api/logs` → `HealthLogService` 先呼叫 `DecisionTreeService.predict(sleepHours, steps, moodScore)`，用目前記憶體中的樹即時算出 `risk_level` → 連同原始數值一起存進 `health_logs`（`is_seed_data=false`）→ 回傳含 `risk_level` 的紀錄給前端顯示。
+2. **模型訓練**：App 啟動時（`SeedDataLoader`）或使用者呼叫 `POST /api/model/train` → `HealthLogService.retrain()` 從 `health_logs` 撈出所有 `is_seed_data=true` 的列 → 交給 `DecisionTreeService.train()` 計算 entropy / Information Gain、遞迴建樹 → 新樹存在 `DecisionTreeService` 內部記憶體變數，取代舊樹，之後所有 `predict()` 呼叫都用這棵新樹。
+3. **查看決策樹**：「決策樹分析」頁面呼叫 `GET /api/model/tree`，直接把目前記憶體中的樹結構（含每層 entropy、特徵、門檻、樣本數）序列化成 JSON 回傳，給前端畫出樹狀圖。
+4. **趨勢圖**：`trends.js` 呼叫 `GET /api/logs?sort=asc`（只取使用者手動輸入、排除種子資料）或 `GET /api/logs/trends`（含種子資料），把睡眠/步數/心情依日期排序後丟給 Chart.js 畫線圖。
+5. **AI 健康建議**：使用者點某筆紀錄的建議按鈕 → `GET /api/ai/insight/{logId}` → `AiInsightService` 依該筆的 `risk_level` 組 prompt 呼叫 Gemini API（`generateContent`）→ 解析回應文字回傳；沒設定 `GEMINI_API_KEY` 或呼叫失敗時，自動退回內建規則式建議文字，不會中斷流程。
 
-### 環境變數
-
-| 變數 | 說明 | 預設值 |
-|---|---|---|
-| `PORT` | HTTP 連接埠 | 8080 |
-| `DB_PATH` | SQLite 檔案路徑 | `./data/health_diary.db` |
-| `GEMINI_API_KEY` | Google Gemini API 金鑰；未設定時 AI 建議改用內建規則式訊息，不會噴錯 | 空 |
-
-## 部署到 Railway
-
-1. 將此專案推到 Git repository，於 Railway 建立新專案並連結該 repo。
-2. Railway 會偵測到 `Dockerfile` 並用它建置（`railway.json` 已指定 `DOCKERFILE` builder）。
-3. 在 Railway 的 Variables 設定 `GEMINI_API_KEY`（選填）。
-4. 建議替 SQLite 資料庫掛載一個 Volume 到 `/app/data`，並設定 `DB_PATH=/app/data/health_diary.db`，
-   避免每次重新部署資料被清空。
+簡言之：前端只認 REST JSON，不直接碰資料庫；ML 模組（決策樹）是後端 Service 層裡的一個「訓練好就常駐在記憶體」的元件，靠同一張 `health_logs` 表跟資料庫互動——種子資料負責訓練、使用者資料負責被預測並寫入。
 
 ## 專案結構
 
@@ -116,6 +130,6 @@ mvn spring-boot:run
 再從三個特徵中選出增益最大者作為節點切分依據，遞迴建樹，直到節點純粹、
 樣本數過少、深度達上限、或已無正增益可切分為止。
 
-內建的 24 筆種子資料刻意讓 `steps` 與 `mood_score` 帶有一些雜訊（例如睡得好但當天走得少），
+內建的 116 筆種子資料刻意讓 `steps` 與 `mood_score` 帶有一些雜訊（例如睡得好但當天走得少），
 讓 `sleep_hours` 的 Information Gain 明顯最高（≈0.918，相對 steps≈0.517、mood_score≈0.378），
 作為根節點的示範會比三個特徵完全打平更貼近真實情境。
